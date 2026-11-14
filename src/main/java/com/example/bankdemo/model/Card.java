@@ -7,7 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
+import com.example.bankdemo.enums.CardType;
 
 @Entity
 @Table(name = "cards")
@@ -40,4 +40,15 @@ public class Card {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    /*
+    EXPERIMENTAL
+     */
+
+    @Column(name = "card_name")
+    private String cardName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CardType cardType;
 }

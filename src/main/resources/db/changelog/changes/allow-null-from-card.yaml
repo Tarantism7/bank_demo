@@ -1,0 +1,10 @@
+
+databaseChangeLog:
+    - changeSet:
+          id: allow-null-from-card
+          author: developer
+          changes:
+              - dropNotNullConstraint:
+                    tableName: transfer
+                    columnName: from_card_id
+                    columnDataType: BIGINT

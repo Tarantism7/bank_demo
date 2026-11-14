@@ -1,0 +1,24 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: add-transaction-type
+      author: developer
+      changes:
+        - addColumn:
+            tableName: transfer
+            columns:
+              - column:
+                  name: type
+                  type: VARCHAR(30)
+
+        - update:
+            tableName: transfer
+            columns:
+              - column:
+                  name: type
+                  value: TRANSFER
+
+        - addNotNullConstraint:
+            tableName: transfer
+            columnName: type
+            columnDataType: VARCHAR(30)

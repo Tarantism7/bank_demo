@@ -2,8 +2,12 @@ package com.example.bankdemo.service;
 
 import com.example.bankdemo.dto.CardResponse;
 import com.example.bankdemo.enums.CardStatus;
+import com.example.bankdemo.enums.CardType;
+import com.example.bankdemo.enums.TransactionType;
 import com.example.bankdemo.exception.CardAlreadyExistsException;
+import com.example.bankdemo.model.Transfer;
 import com.example.bankdemo.model.User;
+import com.example.bankdemo.repository.TransferRepository;
 import com.example.bankdemo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import com.example.bankdemo.model.Card;
@@ -12,9 +16,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.example.bankdemo.repository.CardRepository;
 import com.example.bankdemo.util.CardMaskUtil;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import java.time.LocalDate;
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +32,9 @@ public class CardService {
     private final EncryptionService encryptionService;
     private final UserRepository userRepository;
     private final HashingService hashingService;
+
+    private static final SecureRandom RANDOM = new SecureRandom();
+    private final TransferRepository transferRepository;
 
     public CardResponse create(Card card, String username) {
 
@@ -105,9 +117,9 @@ public class CardService {
     /**
      * Fetch all cards for a specific user ID.
      */
-    public List<Card> getCardsByUserId(Long userId) {
-        return cardRepository.findByUserId(userId);
-    }
+//    public List<Card> getCardsByUserId(Long userId) {
+//        return cardRepository.findByUserId(userId);
+//    }
 
     /**
      * Helper for admin dashboard if needed.
@@ -118,5 +130,122 @@ public class CardService {
 
     public BigDecimal totalBalance() {
         return cardRepository.sumBalances();
+    }
+
+    /*
+    EXPERIMENTAL
+     */
+
+    public CardResponse createForUser(
+            String username,
+            String cardName,
+            CardType cardType) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Card card = new Card();
+
+        card.setNumber(generateCardNumber());
+        card.setOwner(user.getUsername());
+        card.setCardName(cardName);
+        card.setCardType(cardType);
+        card.setExpiryDate(LocalDate.now().plusYears(5));
+        card.setBalance(BigDecimal.ZERO);
+
+        return create(card, username);
+    }
+
+    private String generateCardNumber() {
+
+        StringBuilder number = new StringBuilder();
+
+        for (int i = 0; i < 16; i++) {
+            number.append(RANDOM.nextInt(10));
+        }
+
+        return number.toString();
+    }
+
+    public Card renameCard(Long cardId, String newName, String username) {
+
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new RuntimeException("Card not found"));
+
+        if (!card.getUser().getUsername().equals(username)) {
+            throw new RuntimeException("You cannot rename another user's card");
+        }
+
+        if (newName == null || newName.isBlank()) {
+            throw new IllegalArgumentException("Card name cannot be empty");
+        }
+
+        if (newName.length() > 50) {
+            throw new IllegalArgumentException("Card name is too long");
+        }
+
+        card.setCardName(newName.trim());
+
+        return cardRepository.save(card);
+    }
+
+    public void deleteUserCard(Long cardId, Long userId) {
+
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new RuntimeException("Card not found"));
+
+        // Check card ownership
+        if (!card.getUser().getId().equals(userId)) {
+            throw new RuntimeException(
+                    "You cannot delete another user's card");
+        }
+
+        // Check if already deleted
+        if (card.getStatus() == CardStatus.DELETED) {
+            throw new RuntimeException("Card is already deleted");
+        }
+
+        // Soft delete
+        card.setStatus(CardStatus.DELETED);
+        cardRepository.save(card);
+    }
+
+    public List<Card> getCardsByUserId(Long userId) {
+        return cardRepository.findByUserIdAndStatusNot(
+                userId,
+                CardStatus.DELETED
+        );
+    }
+
+    @Transactional
+    public void addBalance(Long cardId, Long userId, BigDecimal amount) {
+
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new RuntimeException("Card not found"));
+
+        if (!card.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Unauthorized");
+        }
+
+        if (card.getStatus() != CardStatus.ACTIVE) {
+            throw new RuntimeException("Card is not active");
+        }
+
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Invalid amount");
+        }
+
+        card.setBalance(card.getBalance().add(amount));
+        cardRepository.save(card);
+
+        Transfer deposit = Transfer.builder()
+                .fromCard(null)
+                .toCard(card)
+                .amount(amount)
+                .createdAt(LocalDateTime.now())
+                .type(TransactionType.DEPOSIT)
+                .build();
+
+        transferRepository.save(deposit);
     }
 }

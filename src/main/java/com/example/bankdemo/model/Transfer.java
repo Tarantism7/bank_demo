@@ -1,5 +1,6 @@
 package com.example.bankdemo.model;
 
+import com.example.bankdemo.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,12 +22,18 @@ public class Transfer {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "from_card_id")
     private Card fromCard;
 
     @ManyToOne
+    @JoinColumn(name = "to_card_id", nullable = false)
     private Card toCard;
 
     private BigDecimal amount;
 
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TransactionType type;
 }

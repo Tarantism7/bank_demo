@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-card-type
+      author: developer
+      changes:
+        - addColumn:
+            tableName: cards
+            columns:
+              - column:
+                  name: card_type
+                  type: VARCHAR(50)
+                  defaultValue: VISA
+                  constraints:
+                    nullable: false

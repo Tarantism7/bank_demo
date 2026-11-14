@@ -22,4 +22,10 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
     @Query("SELECT COALESCE(SUM(c.balance), 0) FROM Card c")
     BigDecimal sumBalances();
+
+    List<Card> findByUserIdAndStatusNot(
+            Long userId,
+            CardStatus status
+    );
+
 }

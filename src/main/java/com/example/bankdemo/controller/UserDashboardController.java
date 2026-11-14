@@ -1,5 +1,6 @@
 package com.example.bankdemo.controller;
 
+import com.example.bankdemo.enums.CardType;
 import com.example.bankdemo.model.User;
 import com.example.bankdemo.model.Card;
 import com.example.bankdemo.service.CardService;
@@ -47,6 +48,111 @@ public class UserDashboardController {
             redirectAttributes.addFlashAttribute("successMessage", "Transfer successful!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Transfer failed: " + e.getMessage());
+        }
+
+        return "redirect:/user/dashboard";
+    }
+
+    /*
+    EXPERIMENTAL
+     */
+
+    @PostMapping("/cards/create")
+    public String createCard(
+            @RequestParam String cardName,
+            @RequestParam CardType cardType,
+            @AuthenticationPrincipal UserDetails userDetails,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            cardService.createForUser(
+                    userDetails.getUsername(),
+                    cardName,
+                    cardType
+            );
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage", "Card created successfully!");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage", "Card creation failed: " + e.getMessage());
+        }
+
+        return "redirect:/user/dashboard";
+    }
+
+    @PostMapping("/cards/{id}/rename")
+    public String renameCard(
+            @PathVariable Long id,
+            @RequestParam String cardName,
+            @AuthenticationPrincipal UserDetails userDetails,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            cardService.renameCard(
+                    id,
+                    cardName,
+                    userDetails.getUsername()
+            );
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Card renamed successfully!"
+            );
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Could not rename card: " + e.getMessage()
+            );
+        }
+
+        return "redirect:/user/dashboard";
+    }
+
+    @PostMapping("/cards/delete/{id}")
+    public String deleteCard(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            User currentUser =
+                    userService.findByUsername(userDetails.getUsername());
+
+            cardService.deleteUserCard(id, currentUser.getId());
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage", "Card deleted successfully!");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage", "Could not delete card: " + e.getMessage());
+        }
+
+        return "redirect:/user/dashboard";
+    }
+
+    @PostMapping("/cards/add-balance")
+    public String addBalance(
+            @RequestParam Long cardId,
+            @RequestParam BigDecimal amount,
+            @AuthenticationPrincipal UserDetails userDetails,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            User currentUser =
+                    userService.findByUsername(userDetails.getUsername());
+
+            cardService.addBalance(cardId, currentUser.getId(), amount);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage", "Balance added successfully!");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage", "Could not add balance: " + e.getMessage());
         }
 
         return "redirect:/user/dashboard";

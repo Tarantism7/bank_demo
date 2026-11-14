@@ -1,3 +1,4 @@
+
 databaseChangeLog:
   - changeSet:
       id: create-cards
@@ -35,7 +36,7 @@ databaseChangeLog:
                   name: number_hash
                   type: VARCHAR(255)
                   constraints:
-                    nullable: false # or true depending on your requirement
+                    nullable: false
         - addForeignKeyConstraint:
             baseTableName: cards
             baseColumnNames: user_id
