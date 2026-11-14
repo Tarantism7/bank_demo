@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.bankdemo.repository.TransferRepository;
 import com.example.bankdemo.service.TransferService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -23,13 +24,17 @@ public class TransferController {
         Transfer money between own cards
     */
     @PostMapping
-    public ResponseEntity<Transfer> transfer(@Valid @RequestBody TransferRequest request) {
-        Transfer transfer =
-                transferService.transfer(
-                        request.getFromCard(),
-                        request.getToCard(),
-                        request.getAmount()
-                );
+    public ResponseEntity<Transfer> transfer(
+            @Valid @RequestBody TransferRequest request,
+            Principal principal
+    ) {
+        Transfer transfer = transferService.transfer(
+                request.getFromCard(),
+                request.getToCard(),
+                request.getAmount(),
+                principal.getName()
+        );
+
         return ResponseEntity.ok(transfer);
     }
 

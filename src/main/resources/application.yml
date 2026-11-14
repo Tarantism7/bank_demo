@@ -19,3 +19,6 @@ server:
 
 jwt:
   secret: my-secret-key-my-secret-key-my-secret-key
+
+app:
+  admin-invite-code: 1111

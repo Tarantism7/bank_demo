@@ -203,6 +203,107 @@
     </section>
 
 
+
+    <!-- Send Money to Another User -->
+    <section class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 md:col-span-2">
+
+        <h2 class="text-lg font-bold mb-2">
+            Send Money to Another User
+        </h2>
+
+        <p class="text-sm text-gray-500 mb-4">
+            Send money to another registered Bank Demo user.
+        </p>
+
+        <form th:action="@{/user/transfer-to-user}"
+              method="post"
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <!-- Your Card -->
+            <div>
+                <label for="fromCardId"
+                       class="block text-sm font-medium mb-1">
+                    From Card
+                </label>
+
+                <select id="fromCardId"
+                        name="fromCardId"
+                        required
+                        class="w-full border border-gray-300 rounded p-2 text-sm">
+
+                    <option value="">Select your card</option>
+
+                    <option th:each="c : ${cards}"
+                            th:if="${c.status.name() == 'ACTIVE'}"
+                            th:value="${c.id}"
+                            th:text="${c.cardName + ' (Card #' + c.id + ')'}">
+                    </option>
+
+                </select>
+            </div>
+
+            <!-- Recipient Username -->
+            <div>
+                <label for="recipientUsername"
+                       class="block text-sm font-medium mb-1">
+                    Recipient Username
+                </label>
+
+                <input type="text"
+                       id="recipientUsername"
+                       name="recipientUsername"
+                       required
+                       minlength="3"
+                       maxlength="50"
+                       placeholder="Enter username"
+                       class="w-full border border-gray-300 rounded p-2 text-sm">
+            </div>
+
+            <!-- Recipient Card ID -->
+            <div>
+                <label for="toCardId"
+                       class="block text-sm font-medium mb-1">
+                    Recipient Card ID
+                </label>
+
+                <input type="number"
+                       id="toCardId"
+                       name="toCardId"
+                       min="1"
+                       required
+                       placeholder="Enter recipient card ID"
+                       class="w-full border border-gray-300 rounded p-2 text-sm">
+            </div>
+
+            <!-- Amount -->
+            <div>
+                <label for="otherUserAmount"
+                       class="block text-sm font-medium mb-1">
+                    Amount
+                </label>
+
+                <input type="number"
+                       id="otherUserAmount"
+                       name="amount"
+                       step="0.01"
+                       min="0.01"
+                       required
+                       placeholder="0.00"
+                       class="w-full border border-gray-300 rounded p-2 text-sm">
+            </div>
+
+            <!-- Submit -->
+            <button type="submit"
+                    class="sm:col-span-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded text-sm">
+                Send Money
+            </button>
+
+        </form>
+
+    </section>
+
+
+
     <!-- Add Balance (Testing) -->
     <section class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 md:col-span-2">
 

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -39,15 +40,31 @@ public class UserDashboardController {
     }
 
     @PostMapping("/transfer")
-    public String processTransfer(@RequestParam("fromCardId") Long fromCardId,
-                                  @RequestParam("toCardId") Long toCardId,
-                                  @RequestParam("amount") BigDecimal amount,
-                                  RedirectAttributes redirectAttributes) {
+    public String processTransfer(
+            @RequestParam("fromCardId") Long fromCardId,
+            @RequestParam("toCardId") Long toCardId,
+            @RequestParam("amount") BigDecimal amount,
+            Principal principal,
+            RedirectAttributes redirectAttributes) {
+
         try {
-            transferService.transfer(fromCardId, toCardId, amount);
-            redirectAttributes.addFlashAttribute("successMessage", "Transfer successful!");
+            transferService.transfer(
+                    fromCardId,
+                    toCardId,
+                    amount,
+                    principal.getName()
+            );
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Transfer successful!"
+            );
+
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Transfer failed: " + e.getMessage());
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Transfer failed: " + e.getMessage()
+            );
         }
 
         return "redirect:/user/dashboard";
