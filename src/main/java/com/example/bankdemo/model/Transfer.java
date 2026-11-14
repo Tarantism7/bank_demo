@@ -1,0 +1,32 @@
+package com.example.bankdemo.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+
+@Entity
+@Table(name="transfer")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Transfer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    private Card fromCard;
+
+    @ManyToOne
+    private Card toCard;
+
+    private BigDecimal amount;
+
+    private LocalDateTime createdAt;
+}

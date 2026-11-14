@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-cards
+      author: developer
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: number
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: owner
+                  type: VARCHAR(150)
+              - column:
+                  name: expiry_date
+                  type: DATE
+              - column:
+                  name: status
+                  type: VARCHAR(30)
+              - column:
+                  name: balance
+                  type: DECIMAL(15,2)
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: number_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false # or true depending on your requirement
+        - addForeignKeyConstraint:
+            baseTableName: cards
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_card_user

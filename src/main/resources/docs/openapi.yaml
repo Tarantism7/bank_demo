@@ -1,0 +1,70 @@
+openapi: 3.0.3
+
+info:
+  title: Bank Card Management API
+  version: 1.0.0
+  description: API for managing bank cards and transfers
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /auth/register:
+    post:
+      summary: Register user
+      responses:
+        200:
+          description: User created
+  /auth/login:
+    post:
+      summary: Login
+      responses:
+        200:
+          description: JWT token
+
+  /cards:
+    post:
+      summary: Create card
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Card created
+    get:
+      summary: Get cards
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Cards returned
+
+  /cards/{id}/block:
+    put:
+      summary: Block card
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Card blocked
+
+  /transfers:
+    post:
+      summary: Transfer money
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Transfer completed
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

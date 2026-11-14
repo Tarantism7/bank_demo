@@ -1,0 +1,21 @@
+spring:
+
+  datasource:
+    url: jdbc:postgresql://localhost:5438/bankcards
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+
+server:
+  port: 8080
+
+jwt:
+  secret: my-secret-key-my-secret-key-my-secret-key

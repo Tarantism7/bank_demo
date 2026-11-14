@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/001-users.yaml
+  - include:
+      file: db/changelog/002-cards.yaml
+  - include:
+      file: db/changelog/003-transfers.yaml
+  - include:
+      file: db/changelog/004-seed-data.yaml

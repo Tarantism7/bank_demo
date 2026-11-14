@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-insert-test-users
+      author: bankdemo
+      validCheckSum: ANY
+      changes:
+        - sql:
+            splitStatements: true
+            stripComments: true
+            sql: |
+              INSERT INTO users (username, email, password, role) 
+              VALUES ('user1', 'user@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.AQubh4a', 'USER')
+              ON CONFLICT (username) DO UPDATE SET role = EXCLUDED.role;
+              
+              INSERT INTO users (username, email, password, role) 
+              VALUES ('admin1', 'admin@example.com', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.AQubh4a', 'ADMIN')
+              ON CONFLICT (username) DO UPDATE SET role = EXCLUDED.role;
