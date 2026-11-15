@@ -1,5 +1,6 @@
-package com.example.bankdemo.exception;
+package com.example.bankdemo.exception.transaction;
 
+import com.example.bankdemo.exception.AppException;
 import org.springframework.http.HttpStatus;
 
 public class InsufficientBalanceException extends AppException {

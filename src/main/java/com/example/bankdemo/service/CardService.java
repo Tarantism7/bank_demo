@@ -4,7 +4,9 @@ import com.example.bankdemo.dto.CardResponse;
 import com.example.bankdemo.enums.CardStatus;
 import com.example.bankdemo.enums.CardType;
 import com.example.bankdemo.enums.TransactionType;
-import com.example.bankdemo.exception.CardAlreadyExistsException;
+import com.example.bankdemo.exception.ResourceNotFoundException;
+import com.example.bankdemo.exception.card.*;
+import com.example.bankdemo.exception.transaction.InvalidAmountException;
 import com.example.bankdemo.model.Transfer;
 import com.example.bankdemo.model.User;
 import com.example.bankdemo.repository.TransferRepository;
@@ -21,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import java.time.LocalDate;
 import java.security.SecureRandom;
 
@@ -39,7 +40,9 @@ public class CardService {
     public CardResponse create(Card card, String username) {
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User", username)
+                );
 
         String originalNumber = card.getNumber();
         String hash = hashingService.hash(originalNumber);
@@ -60,14 +63,18 @@ public class CardService {
 
     public Card block(Long id) {
         Card card = cardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Card", id.toString())
+                );
         card.setStatus(CardStatus.BLOCKED);
         return cardRepository.save(card);
     }
 
     public Card activate(Long id) {
         Card card = cardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Card", id.toString())
+                );
         card.setStatus(CardStatus.ACTIVE);
         return cardRepository.save(card);
     }
@@ -105,12 +112,16 @@ public class CardService {
 
     public Card getCard(Long id) {
         return cardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Card", id.toString())
+                );
     }
 
     public BigDecimal getBalance(Long id) {
         Card card = cardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Card", id.toString())
+                );
         return card.getBalance();
     }
 
@@ -142,7 +153,9 @@ public class CardService {
             CardType cardType) {
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User", username)
+                );
 
         Card card = new Card();
 
@@ -170,21 +183,25 @@ public class CardService {
     public Card renameCard(Long cardId, String newName, String username) {
 
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Card", cardId.toString())
+                );
 
         if (!card.getUser().getUsername().equals(username)) {
-            throw new RuntimeException("You cannot rename another user's card");
+            throw new UnauthorizedCardAccessException();
         }
 
         if (newName == null || newName.isBlank()) {
-            throw new IllegalArgumentException("Card name cannot be empty");
+            throw new InvalidCardNameException("Card name cannot be empty");
         }
 
-        if (newName.length() > 50) {
-            throw new IllegalArgumentException("Card name is too long");
+        String trimmedName = newName.trim();
+
+        if (trimmedName.length() > 50) {
+            throw new InvalidCardNameException("Card name is too long");
         }
 
-        card.setCardName(newName.trim());
+        card.setCardName(trimmedName);
 
         return cardRepository.save(card);
     }
@@ -192,17 +209,18 @@ public class CardService {
     public void deleteUserCard(Long cardId, Long userId) {
 
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Card", cardId.toString())
+                );
 
         // Check card ownership
         if (!card.getUser().getId().equals(userId)) {
-            throw new RuntimeException(
-                    "You cannot delete another user's card");
+            throw new UnauthorizedCardAccessException();
         }
 
         // Check if already deleted
         if (card.getStatus() == CardStatus.DELETED) {
-            throw new RuntimeException("Card is already deleted");
+            throw new CardAlreadyDeletedException(cardId);
         }
 
         // Soft delete
@@ -221,18 +239,20 @@ public class CardService {
     public void addBalance(Long cardId, Long userId, BigDecimal amount) {
 
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Card", cardId.toString())
+                );
 
         if (!card.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Unauthorized");
+            throw new UnauthorizedCardAccessException();
         }
 
         if (card.getStatus() != CardStatus.ACTIVE) {
-            throw new RuntimeException("Card is not active");
+            throw new CardNotActiveException();
         }
 
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Invalid amount");
+            throw new InvalidAmountException();
         }
 
         card.setBalance(card.getBalance().add(amount));

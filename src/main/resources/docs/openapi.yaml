@@ -1,9 +1,9 @@
 openapi: 3.0.3
 
 info:
-  title: Bank Card Management API
+  title: Bank Demo API
   version: 1.0.0
-  description: API for managing bank cards and transfers
+  description: API for managing bank demo
 
 servers:
   - url: http://localhost:8080
