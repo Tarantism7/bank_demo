@@ -19,53 +19,30 @@ import java.util.List;
 public class CardController {
     private final CardService cardService;
 
-    /*
-        USER:
-        View own cards with pagination
-    */
     @GetMapping("/my")
     public ResponseEntity<List<CardResponse>> myCards(Authentication authentication) {
-        // In a real implementation:
         // username -> User -> userId
         Long userId = 1L;
         return ResponseEntity.ok(cardService.getUserCards(userId));
     }
 
-    /*
-        USER:
-        Create card
-        Usually ADMIN only,
-        kept here for simplicity
-    */
     @PostMapping
     public ResponseEntity<CardResponse> create(@Valid @RequestBody Card card, Authentication authentication) {
         String username = authentication.getName();
         return ResponseEntity.ok(cardService.create(card, username));
     }
 
-    /*
-        USER:
-        Request card blocking
-    */
     @PutMapping("/{id}/block")
     public ResponseEntity<Card> block(@PathVariable Long id) {
         return ResponseEntity.ok(cardService.block(id));
     }
 
-    /*
-        USER:
-        Check balance
-    */
     @GetMapping("/{id}/balance")
     public ResponseEntity<?> balance(@PathVariable Long id) {
         Card card = cardService.getCard(id);
         return ResponseEntity.ok(card.getBalance());
     }
 
-    /*
-        ADMIN:
-        Pagination example
-    */
     @GetMapping("/all")
     public ResponseEntity<Page<Card>> allCards(
             @RequestParam(defaultValue = "0") int page,

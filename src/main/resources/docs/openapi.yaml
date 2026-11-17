@@ -18,9 +18,34 @@ paths:
   /auth/login:
     post:
       summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: john
+                password:
+                  type: string
+                  format: password
+                  example: password123
       responses:
-        200:
+        '200':
           description: JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIs...
 
   /cards:
     post:

@@ -23,6 +23,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
+    /*
+    TODO: update exception + fix
+     */
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,

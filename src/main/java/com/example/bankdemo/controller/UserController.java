@@ -14,10 +14,6 @@ import java.util.List;
 public class UserController {
     private final UserRepository userRepository;
 
-    /*
-        ADMIN:
-        Get all users
-    */
     @GetMapping
     public ResponseEntity<List<User>> getUsers() {
         return ResponseEntity.ok(
@@ -25,10 +21,6 @@ public class UserController {
         );
     }
 
-    /*
-        ADMIN:
-        Delete user
-    */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         userRepository.deleteById(id);

@@ -23,5 +23,4 @@ public class CardResponse {
 
     public CardResponse() {
     }
-
 }

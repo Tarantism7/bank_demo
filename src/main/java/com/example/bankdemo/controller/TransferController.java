@@ -19,10 +19,7 @@ public class TransferController {
     private final TransferService transferService;
     private final TransferRepository transferRepository;
 
-    /*
-        USER:
-        Transfer money between own cards
-    */
+    //transfer between cards
     @PostMapping
     public ResponseEntity<Transfer> transfer(
             @Valid @RequestBody TransferRequest request,
@@ -38,10 +35,6 @@ public class TransferController {
         return ResponseEntity.ok(transfer);
     }
 
-    /*
-        USER:
-        View transfers
-    */
     @GetMapping
     public ResponseEntity<List<Transfer>> history() {
         return ResponseEntity.ok(

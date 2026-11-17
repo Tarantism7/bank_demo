@@ -20,7 +20,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     // Finds all cards belonging to a specific user ID
     List<Card> findByUserId(Long userId);
 
-    // Optional: count active cards for the admin dashboard
+    //count active cards for admin
     long countByStatus(com.example.bankdemo.enums.CardStatus status);
 
     @Query("SELECT COALESCE(SUM(c.balance), 0) FROM Card c")

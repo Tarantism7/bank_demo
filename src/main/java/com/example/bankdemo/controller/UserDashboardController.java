@@ -70,10 +70,6 @@ public class UserDashboardController {
         return "redirect:/user/dashboard";
     }
 
-    /*
-    EXPERIMENTAL
-     */
-
     @PostMapping("/cards/create")
     public String createCard(
             @RequestParam String cardName,

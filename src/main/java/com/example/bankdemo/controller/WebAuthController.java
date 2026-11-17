@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
-/**
- * Main page: sign in as user or admin, or create a user / admin account.
- * Admin sign-up needs the invite code from app.admin-invite-code, so not everybody can become an admin.
- */
 @Controller
 @RequiredArgsConstructor
 public class WebAuthController {
@@ -42,7 +38,7 @@ public class WebAuthController {
         return "home";
     }
 
-    // Old links to /login keep working.
+   //old links
     @GetMapping("/login")
     public String login() {
         return "redirect:/";

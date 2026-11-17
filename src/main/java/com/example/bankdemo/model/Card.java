@@ -41,10 +41,6 @@ public class Card {
     @JoinColumn(name = "user_id")
     private User user;
 
-    /*
-    EXPERIMENTAL
-     */
-
     @Column(name = "card_name")
     private String cardName;
 

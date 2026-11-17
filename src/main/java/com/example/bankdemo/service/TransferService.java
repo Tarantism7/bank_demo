@@ -18,6 +18,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/*
+TODO: update exception
+ */
+
 @Service
 @RequiredArgsConstructor
 public class TransferService {
@@ -26,7 +30,7 @@ public class TransferService {
     private final TransferRepository transferRepository;
     private final UserRepository userRepository;
 
-    // Existing transfer between own cards
+    //transfer between own cards
     @Transactional
     public Transfer transfer(
             Long fromId,
@@ -67,7 +71,7 @@ public class TransferService {
         return executeTransfer(from, to, amount);
     }
 
-    // NEW: Transfer money to another registered user
+    //transfer money to another registered user
     @Transactional
     public Transfer transferToUser(
             String senderUsername,

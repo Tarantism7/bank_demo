@@ -125,16 +125,6 @@ public class CardService {
         return card.getBalance();
     }
 
-    /**
-     * Fetch all cards for a specific user ID.
-     */
-//    public List<Card> getCardsByUserId(Long userId) {
-//        return cardRepository.findByUserId(userId);
-//    }
-
-    /**
-     * Helper for admin dashboard if needed.
-     */
     public long countActiveCards() {
         return cardRepository.countByStatus(CardStatus.ACTIVE);
     }
@@ -142,10 +132,6 @@ public class CardService {
     public BigDecimal totalBalance() {
         return cardRepository.sumBalances();
     }
-
-    /*
-    EXPERIMENTAL
-     */
 
     public CardResponse createForUser(
             String username,

@@ -8,7 +8,6 @@ import java.util.Base64;
 
 @Service
 public class EncryptionService {
-    // For a real application, load this from configuration or a secrets manager.
     private static final String SECRET = "1234567890123456";
 
     public String encrypt(String text) {
